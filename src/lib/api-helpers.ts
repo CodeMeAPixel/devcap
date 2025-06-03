@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
+import { createLogger } from './logger';
+
+const logger = createLogger('api');
 
 /**
  * API response statuses
@@ -207,6 +210,56 @@ export function createApiResponseSchema<T extends z.ZodTypeAny>(schema: T) {
       timestamp: z.string(),
     }).optional(),
   });
+}
+
+/**
+ * Helper for client-side API requests
+ */
+export async function fetchApi<T>(
+  url: string, 
+  options?: RequestInit
+): Promise<T> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...options,
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      logger.error('API Request Failed', {
+        url,
+        status: response.status,
+        data,
+      });
+      
+      throw new ApiError(
+        data.error?.message || 'Request failed',
+        data.error?.code || 'request_failed',
+        response.status
+      );
+    }
+    
+    return data;
+  } catch (error) {
+    logger.error('API Request Error', {
+      url,
+      error,
+    });
+    
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    
+    throw new ApiError(
+      error instanceof Error ? error.message : 'Failed to fetch data',
+      'fetch_error',
+      500
+    );
+  }
 }
 
 /**

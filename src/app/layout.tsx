@@ -41,11 +41,11 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable} antialiased min-h-screen tech-ui`}
     >
       <body>
-        <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Providers>{children}</Providers>
-          </ThemeProvider>
-        </SessionProvider>
+        <Providers>
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+        </Providers>
       </body>
     </html>
   );
