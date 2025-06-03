@@ -1,8 +1,19 @@
-# Developer Capitalist
-
-![Developer Capitalist Logo](/public/code-icon.svg)
+<div align="center">
+  <img src="/public/code-icon.svg" alt="Developer Capitalist Logo" width="80" style="display: inline-block; vertical-align: middle;" />
+  <h1 style="display: inline-block; vertical-align: middle; margin-left: 10px;">Developer Capitalist</h1>
+</div>
 
 Developer Capitalist is an idle clicker game where you write code, build businesses, and become a tech mogul. Click your way to success in the software development industry!
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0" />
+  <img src="https://img.shields.io/badge/Next.js-15.3.3-black" alt="Next.js 15.3.3" />
+  <img src="https://img.shields.io/badge/React-19.0.0-61DAFB" alt="React 19.0.0" />
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6" alt="TypeScript 5.x" />
+  <img src="https://img.shields.io/badge/Prisma-5.5.2-2D3748" alt="Prisma 5.5.2" />
+  <img src="https://img.shields.io/badge/Zustand-4.4.5-brown" alt="Zustand 4.4.5" />
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" />
+</p>
 
 > [!CAUTION]
 > **Work in Progress**: Developer Capitalist is currently under active development.
