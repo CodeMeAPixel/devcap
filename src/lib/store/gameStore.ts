@@ -178,13 +178,25 @@ export const useGameStore = create<GameState & GameActions>()(
             return;
           }
           
+          console.log('Loading game data for user:', userId);
+          
+          // Initialize game data first if not already initialized
+          if (!get().isInitialized) {
+            await get().initializeGame();
+          }
+          
           const response = await fetch(`/api/game/load?userId=${userId}`);
           
+          console.log('Load response status:', response.status);
+          
           if (!response.ok) {
-            throw new Error('Failed to load game data');
+            const errorText = await response.text();
+            console.error('Error loading game data:', errorText);
+            throw new Error(`Failed to load game data: ${response.status}`);
           }
           
           const data = await response.json();
+          console.log('Game data loaded successfully');
           
           // Update game state with loaded data
           set((state) => ({
@@ -204,20 +216,24 @@ export const useGameStore = create<GameState & GameActions>()(
             lastOnline: data.progress?.lastActive ? new Date(data.progress.lastActive) : new Date(),
             isLoaded: true,
             isLoading: false,
+            loadError: null
           }));
           
           // Calculate offline earnings if we've been away
           get().calculateOfflineProgress();
         } catch (error) {
           console.error('Error loading game data:', error);
+          
+          // Set loaded but with error flag
           set({ 
             isLoaded: true, 
             isLoading: false,
             loadError: (error as Error).message 
           });
           
-          // Initialize the game if we failed to load
+          // Initialize the game with default data if we failed to load but haven't initialized yet
           if (!get().isInitialized) {
+            console.log('Initializing game with default data due to load failure');
             get().initializeGame();
           }
         }

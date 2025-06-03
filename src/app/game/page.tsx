@@ -49,10 +49,18 @@ export default function GamePage() {
     }
     
     if (session.user?.id) {
+      console.log('Setting user ID and loading game');
       setUserId(session.user.id);
-      loadGame();
+      loadGame().catch(err => {
+        console.error('Error in game loading effect:', err);
+        addToast({
+          title: 'Error Loading Game',
+          description: 'There was a problem loading your game data. Some features may be limited.',
+          type: 'error'
+        });
+      });
     }
-  }, [session, status, router, setUserId, loadGame]);
+  }, [session, status, router, setUserId, loadGame, addToast]);
 
   // Auto-save game every minute
   useEffect(() => {
@@ -111,7 +119,7 @@ export default function GamePage() {
     }, 3000);
   };
 
-  // Show loading screen
+  // Show loading or error screen
   if (status === 'loading' || gameLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">

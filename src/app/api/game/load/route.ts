@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
     // Create default progress if it doesn't exist
     let progress = userProgress;
     if (!progress) {
+      console.log('Creating default progress for user:', userId);
       try {
         // Create default progress for new users
         progress = await prisma.userProgress.create({
@@ -59,6 +60,7 @@ export async function GET(request: NextRequest) {
             offlineBonus: 0.5
           }
         });
+        console.log('Default progress created successfully');
       } catch (error) {
         console.error('Error creating user progress:', error);
         // Continue without creating progress - we'll return defaults
@@ -77,58 +79,70 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    // Fetch businesses
-    const userBusinesses = await prisma.userBusiness.findMany({
-      where: { userId },
-      include: { business: true }
-    });
-    
-    // Fetch team members
-    const userTeam = await prisma.userTeam.findMany({
-      where: { userId },
-      include: { teamMember: true }
-    });
-    
-    // Fetch upgrades
-    const userUpgrades = await prisma.userUpgrade.findMany({
-      where: { userId },
-      include: { upgrade: true }
-    });
-    
-    // Fetch achievements
-    const userAchievements = await prisma.userAchievement.findMany({
-      where: { userId },
-      include: { achievement: true }
-    });
-    
-    // Return formatted game data
-    return NextResponse.json({
-      progress: progress,
-      businesses: userBusinesses.map(ub => ({
-        id: ub.businessId,
-        level: ub.level,
-        assignedManagers: ub.assignedManagers,
-        lastCollected: ub.lastCollected,
-        ...ub.business
-      })),
-      team: userTeam.map(ut => ({
-        id: ut.teamMemberId,
-        count: ut.count,
-        availableCount: ut.availableCount,
-        ...ut.teamMember
-      })),
-      upgrades: userUpgrades.map(uu => ({
-        id: uu.upgradeId,
-        purchased: true,
-        ...uu.upgrade
-      })),
-      achievements: userAchievements.map(ua => ({
-        id: ua.achievementId,
-        unlocked: true,
-        unlockedAt: ua.unlockedAt,
-        ...ua.achievement
-      }))
-    });
+    // Fetch game data with proper error handling
+    try {
+      // Fetch businesses
+      const userBusinesses = await prisma.userBusiness.findMany({
+        where: { userId },
+        include: { business: true }
+      });
+      
+      // Fetch team members
+      const userTeam = await prisma.userTeam.findMany({
+        where: { userId },
+        include: { teamMember: true }
+      });
+      
+      // Fetch upgrades
+      const userUpgrades = await prisma.userUpgrade.findMany({
+        where: { userId },
+        include: { upgrade: true }
+      });
+      
+      // Fetch achievements
+      const userAchievements = await prisma.userAchievement.findMany({
+        where: { userId },
+        include: { achievement: true }
+      });
+      
+      // Return formatted game data
+      return NextResponse.json({
+        progress: progress,
+        businesses: userBusinesses.map(ub => ({
+          id: ub.businessId,
+          level: ub.level,
+          assignedManagers: ub.assignedManagers || 0,
+          lastCollected: ub.lastCollected || new Date(),
+          ...ub.business
+        })),
+        team: userTeam.map(ut => ({
+          id: ut.teamMemberId,
+          count: ut.count || 0,
+          availableCount: ut.availableCount || 0,
+          ...ut.teamMember
+        })),
+        upgrades: userUpgrades.map(uu => ({
+          id: uu.upgradeId,
+          purchased: true,
+          ...uu.upgrade
+        })),
+        achievements: userAchievements.map(ua => ({
+          id: ua.achievementId,
+          unlocked: true,
+          unlockedAt: ua.unlockedAt,
+          ...ua.achievement
+        }))
+      });
+    } catch (dbError) {
+      console.error('Database error when fetching game data:', dbError);
+      return NextResponse.json(
+        { 
+          error: 'Database error when loading game data', 
+          details: (dbError as Error).message
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error loading game data:', error);
     return NextResponse.json(
