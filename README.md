@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Developer Capitalist
 
-## Getting Started
+![Developer Capitalist Logo](/public/code-icon.svg)
 
-First, run the development server:
+Developer Capitalist is an idle clicker game where you write code, build businesses, and become a tech mogul. Click your way to success in the software development industry!
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> [!CAUTION]
+> **Work in Progress**: Developer Capitalist is currently under active development.
+> - Bugs and performance issues are expected at this stage
+> - Some features may be incomplete or missing
+> - Game balancing is still being fine-tuned
+> - Database schemas might change, potentially requiring resets
+> - Your feedback is valuable as we improve the game!
+>
+> Please check back for the official release. Follow our updates for progress reports.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## About the Project
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Developer Capitalist was born from a simple question: What if Adventure Capitalist met the world of software development? As developers, we spend countless hours writing code, building projects, and growing our skills. This game aims to capture that journey in a fun, simplified, and slightly exaggerated way.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The inspiration came during a late-night coding session when I realized that the progression in development careers - from writing your first lines of code to potentially running a tech empire - has similarities to the incremental growth mechanics of idle games.
 
-## Learn More
+By gamifying the software development experience, Developer Capitalist aims to be both entertaining for developers who will recognize the inside jokes and references, as well as accessible to anyone who enjoys idle/clicker games.
 
-To learn more about Next.js, take a look at the following resources:
+## Core Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Click to Code**: Generate lines of code (LoC) and earn currency with each click
+- **Build Your Empire**: Purchase and upgrade various tech businesses from freelance gigs to global tech corporations
+- **Hire a Team**: Recruit a diverse team of tech professionals from frontend developers to CTOs
+- **Unlock Upgrades**: Enhance your productivity with powerful upgrades like mechanical keyboards and CI/CD automation
+- **Earn Achievements**: Complete objectives and showcase your success
+- **Offline Progress**: Continue earning even when you're not playing
+- **Cloud Saves**: Your progress is automatically saved to the cloud
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS, Framer Motion
+- **State Management**: Zustand with persistence
+- **Authentication**: NextAuth.js with multiple providers
+- **Database**: Prisma with PostgreSQL
+- **Storage**: S3-compatible object storage (Backblaze B2)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For detailed setup instructions, deployment guides, and gameplay information, please check the [documentation](/docs/README.md).
+
+## License
+
+Developer Capitalist is licensed under the MIT License. See the [LICENSE](/LICENSE) file for more information.

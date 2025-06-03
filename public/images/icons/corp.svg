@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="24" fill="#BBDEFB" fill-opacity="0.2"/>
+  <path d="M68 32V96H88V32H68ZM72 36H84V92H72V36Z" fill="#0D47A1"/>
+  <path d="M40 48V96H60V48H40ZM44 52H56V92H44V52Z" fill="#1976D2"/>
+  <path d="M28 60V96H36V60H28Z" fill="#2196F3"/>
+  <path d="M92 60V96H100V60H92Z" fill="#0D47A1"/>
+  <path d="M24 96V100H104V96H24Z" fill="#1565C0"/>
+  <path d="M76 44H80V48H76V44Z" fill="#0D47A1"/>
+  <path d="M76 52H80V56H76V52Z" fill="#0D47A1"/>
+  <path d="M76 60H80V64H76V60Z" fill="#0D47A1"/>
+  <path d="M76 68H80V72H76V68Z" fill="#0D47A1"/>
+  <path d="M76 76H80V80H76V76Z" fill="#0D47A1"/>
+  <path d="M76 84H80V88H76V84Z" fill="#0D47A1"/>
+  <path d="M48 60H52V64H48V60Z" fill="#1976D2"/>
+  <path d="M48 68H52V72H48V68Z" fill="#1976D2"/>
+  <path d="M48 76H52V80H48V76Z" fill="#1976D2"/>
+  <path d="M48 84H52V88H48V84Z" fill="#1976D2"/>
+</svg>

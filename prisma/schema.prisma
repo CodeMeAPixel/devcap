@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  name           String?
+  password       String?        // Hashed password for email/password auth
+  image          String?        // Profile image URL
+  emailVerified  DateTime?      // For email verification
+  isAdmin        Boolean        @default(false) // Admin flag for admin dashboard access
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  userProgress   UserProgress?
+  ownedBusinesses UserBusiness[]
+  ownedUpgrades  UserUpgrade[]
+  hiredTeams     UserTeam[]
+  achievements   UserAchievement[]
+  accounts       Account[]
+  sessions       Session[]
+}
+
+model Account {
+  id                 String   @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Business {
+  id               String         @id @default(uuid())
+  name             String
+  description      String
+  baseCost         Int
+  baseProduction   Int
+  costMultiplier   Float          @default(1.15)
+  unlockRequirement Int           @default(0)
+  imageUrl         String?        // URL for business image
+  iconUrl          String?        // URL for business icon
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  userBusinesses   UserBusiness[]
+}
+
+model UserBusiness {
+  id                 String   @id @default(uuid())
+  userId             String
+  businessId         String
+  level              Int      @default(1)
+  assignedManagers   Int      @default(0)  // Number of team members assigned to this business
+  lastCollected      DateTime @default(now()) // Last time income was collected
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business           Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, businessId])
+}
+
+model TeamMember {
+  id               String      @id @default(uuid())
+  name             String
+  description      String
+  baseCost         Int
+  baseProduction   Int
+  costMultiplier   Float       @default(1.15)
+  unlockRequirement Int        @default(0)
+  imageUrl         String?     // URL for team member image
+  iconUrl          String?     // URL for team member icon
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  userTeams        UserTeam[]
+}
+
+model UserTeam {
+  id              String     @id @default(uuid())
+  userId          String
+  teamMemberId    String
+  count           Int        @default(0)
+  availableCount  Int        @default(0)  // Number of team members available to assign
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamMember      TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([userId, teamMemberId])
+}
+
+model Upgrade {
+  id               String        @id @default(uuid())
+  name             String
+  description      String
+  cost             Int
+  type             String        // business, team, click, etc.
+  multiplier       Float
+  targetId         String?       // ID of the target (business or team) if applicable
+  unlockRequirement Int          @default(0)
+  imageUrl         String?       // URL for upgrade image
+  iconUrl          String?       // URL for upgrade icon
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  userUpgrades     UserUpgrade[]
+}
+
+model UserUpgrade {
+  id        String   @id @default(uuid())
+  userId    String
+  upgradeId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  upgrade   Upgrade  @relation(fields: [upgradeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, upgradeId])
+}
+
+model Achievement {
+  id               String            @id @default(uuid())
+  name             String
+  description      String
+  requirement      Int
+  type             String            // loC, business, team, etc.
+  reward           Int               @default(0)
+  imageUrl         String?           // URL for achievement image
+  iconUrl          String?           // URL for achievement icon
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([userId, achievementId])
+}
+
+model UserProgress {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linesOfCode    Int      @default(0)
+  currency       Int      @default(0)
+  totalEarned    Int      @default(0)
+  clickPower     Int      @default(1)
+  lastActive     DateTime @default(now())
+  offlineBonus   Float    @default(0.5)  // % of regular production earned while offline
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

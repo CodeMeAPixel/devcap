@@ -13,6 +13,11 @@
 # testing
 /coverage
 
+# development stuff
+/todo
+bun.lock
+bun.lockb
+
 # next.js
 /.next/
 /out/
