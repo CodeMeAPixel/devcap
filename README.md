@@ -3,8 +3,6 @@
   <h1 style="display: inline-block; vertical-align: middle; margin-left: 10px;">Developer Capitalist</h1>
 </div>
 
-Developer Capitalist is an idle clicker game where you write code, build businesses, and become a tech mogul. Click your way to success in the software development industry!
-
 <p align="center">
   <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0" />
   <img src="https://img.shields.io/badge/Next.js-15.3.3-black" alt="Next.js 15.3.3" />
@@ -14,6 +12,8 @@ Developer Capitalist is an idle clicker game where you write code, build busines
   <img src="https://img.shields.io/badge/Zustand-4.4.5-brown" alt="Zustand 4.4.5" />
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" />
 </p>
+
+Developer Capitalist is an idle clicker game where you write code, build businesses, and become a tech mogul. Click your way to success in the software development industry!
 
 > [!CAUTION]
 > **Work in Progress**: Developer Capitalist is currently under active development.
