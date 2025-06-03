@@ -147,11 +147,17 @@ export class ApiClient {
 
       // Handle HTTP errors
       if (!response.ok) {
-        let errorData: any;
+        interface ErrorResponse {
+          message?: string;
+          code?: string;
+          details?: unknown;
+        }
+        
+        let errorData: ErrorResponse = { message: 'Unknown error occurred' };
         try {
           errorData = await response.json();
         } catch (e) {
-          errorData = { message: 'Unknown error occurred' };
+          // Keep default error message if parsing fails
         }
 
         throw new ApiError(

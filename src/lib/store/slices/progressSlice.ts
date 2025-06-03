@@ -1,4 +1,18 @@
 import { StateCreator } from 'zustand';
+import { GameState } from '../gameStore';
+
+export interface UserProgress {
+  userId: string;
+  linesOfCode: number;
+  currency: number;
+  totalEarned: number;
+  clickPower: number;
+  lastActive: Date;
+  offlineBonus?: number;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface ProgressSlice {
   currentLoC: number;
@@ -9,10 +23,10 @@ export interface ProgressSlice {
   addLoC: () => void;
   calculateOfflineProgress: () => void;
   collectOfflineEarnings: () => void;
-  loadProgressData: (progress: any) => void;
+  loadProgressData: (progress: UserProgress) => void;
 }
 
-export const createProgressSlice: StateCreator<ProgressSlice> = 
+export const createProgressSlice: StateCreator<GameState> = 
   (set, get, api) => ({
     currentLoC: 0,
     totalLoC: 0,
@@ -21,20 +35,20 @@ export const createProgressSlice: StateCreator<ProgressSlice> =
     offlineEarnings: 0,
     
     addLoC: () => {
-      set((state: any) => ({
+      set((state: GameState) => ({
         currentLoC: state.currentLoC + state.locPerClick,
         totalLoC: state.totalLoC + state.locPerClick,
       }));
       
       // Check for new achievements
-      const state = api.getState() as any;
+      const state = get() as GameState;
       if (state.checkAchievements) {
         state.checkAchievements();
       }
     },
     
     calculateOfflineProgress: () => {
-      const state = api.getState() as any;
+      const state = get() as GameState;
       const now = new Date();
       const lastOnline = state.lastOnline || now;
       
@@ -56,22 +70,23 @@ export const createProgressSlice: StateCreator<ProgressSlice> =
     },
     
     collectOfflineEarnings: () => {
-      const state = api.getState() as any;
+      const state = get() as GameState;
       if (state.offlineEarnings <= 0) return;
       
-      set((state: any) => ({
+      set((state: GameState) => ({
         currentLoC: state.currentLoC + state.offlineEarnings,
         totalLoC: state.totalLoC + state.offlineEarnings,
         offlineEarnings: 0,
       }));
       
       // Check for new achievements
-      if (state.checkAchievements) {
-        state.checkAchievements();
+      const fullState = get() as GameState;
+      if (fullState.checkAchievements) {
+        fullState.checkAchievements();
       }
     },
     
-    loadProgressData: (progress: any) => {
+    loadProgressData: (progress: UserProgress) => {
       set({
         currentLoC: progress?.currency || 0,
         totalLoC: progress?.totalEarned || 0,

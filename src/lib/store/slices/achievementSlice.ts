@@ -1,4 +1,5 @@
 import { StateCreator } from 'zustand';
+import { GameState } from '../gameStore';
 
 export interface Achievement {
   id: string;
@@ -21,13 +22,13 @@ export interface AchievementSlice {
   loadAchievementData: (loadedAchievements: Achievement[]) => void;
 }
 
-export const createAchievementSlice: StateCreator<AchievementSlice> = 
+export const createAchievementSlice: StateCreator<GameState> = 
   (set, get, api) => ({
     achievements: [],
     latestAchievement: null,
     
     checkAchievements: () => {
-      const state = api.getState() as any;
+      const state = get() as GameState;
       let latestAchievement: Achievement | null = null;
       
       const updatedAchievements = state.achievements.map((achievement: Achievement) => {
@@ -42,20 +43,20 @@ export const createAchievementSlice: StateCreator<AchievementSlice> =
             break;
           case 'business':
             const businessCount = state.businesses.reduce(
-              (count: number, b: any) => count + (b.level && b.level > 0 ? 1 : 0),
+              (count: number, b) => count + (b.level && b.level > 0 ? 1 : 0),
               0
             );
             isUnlocked = businessCount >= achievement.requirement;
             break;
           case 'team':
             const teamCount = state.teamMembers.reduce(
-              (count: number, t: any) => count + (t.count || 0),
+              (count: number, t) => count + (t.count || 0),
               0
             );
             isUnlocked = teamCount >= achievement.requirement;
             break;
           case 'upgrade':
-            const upgradeCount = state.upgrades.filter((u: any) => u.purchased).length;
+            const upgradeCount = state.upgrades.filter(u => u.purchased).length;
             isUnlocked = upgradeCount >= achievement.requirement;
             break;
           case 'production':
@@ -72,7 +73,7 @@ export const createAchievementSlice: StateCreator<AchievementSlice> =
           };
           
           // Add the reward to currency
-          set((state: any) => ({
+          set((state: GameState) => ({
             currentLoC: state.currentLoC + achievement.reward,
             totalLoC: state.totalLoC + achievement.reward,
           }));
@@ -96,7 +97,7 @@ export const createAchievementSlice: StateCreator<AchievementSlice> =
     },
     
     loadAchievementData: (loadedAchievements: Achievement[]) => {
-      set((state: any) => ({
+      set((state: GameState) => ({
         achievements: mergeAchievements(state.achievements, loadedAchievements),
       }));
     },

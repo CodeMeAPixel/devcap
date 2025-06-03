@@ -62,23 +62,30 @@ export const useGameStore = create<GameState>()(
             throw new Error('Failed to fetch game data');
           }
           
-          const data = await response.json();
+          interface GameData {
+            businesses: Business[];
+            teamMembers: TeamMember[];
+            upgrades: Upgrade[];
+            achievements: Achievement[];
+          }
+          
+          const data = await response.json() as GameData;
           
           set({
-            businesses: data.businesses.map((b: any) => ({
+            businesses: data.businesses.map((b: Business) => ({
               ...b,
               level: 0,
             })),
-            teamMembers: data.teamMembers.map((t: any) => ({
+            teamMembers: data.teamMembers.map((t: TeamMember) => ({
               ...t,
               count: 0,
               availableCount: 0,
             })),
-            upgrades: data.upgrades.map((u: any) => ({
+            upgrades: data.upgrades.map((u: Upgrade) => ({
               ...u,
               purchased: false,
             })),
-            achievements: data.achievements.map((a: any) => ({
+            achievements: data.achievements.map((a: Achievement) => ({
               ...a,
               unlocked: false,
             })),
@@ -212,7 +219,7 @@ export const useProgress = () => useGameStore(state => ({
   currentLoC: state.currentLoC,
   totalLoC: state.totalLoC,
   locPerClick: state.locPerClick,
-  passiveLocRate: state.passiveLocRate,
+  passiveLoCRate: state.passiveLoCRate,
 }));
 export const useGameActions = () => useGameStore(state => ({
   addLoC: state.addLoC,

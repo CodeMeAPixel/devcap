@@ -60,7 +60,9 @@ export function AdminBusinessList({ businesses }: AdminBusinessListProps) {
                           fill 
                           className="object-cover"
                           onError={(e) => {
-                            (e.target as any).style.display = 'none';
+                            // Type the event target correctly
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
                           }}
                         />
                       </div>

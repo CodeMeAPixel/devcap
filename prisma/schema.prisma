@@ -74,6 +74,8 @@ model Business {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   userBusinesses   UserBusiness[]
+  
+  @@index([unlockRequirement]) // Add index for unlocking logic queries
 }
 
 model UserBusiness {
@@ -104,6 +106,8 @@ model TeamMember {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
   userTeams        UserTeam[]
+  
+  @@index([unlockRequirement]) // Add index for unlocking logic queries
 }
 
 model UserTeam {
@@ -134,6 +138,9 @@ model Upgrade {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   userUpgrades     UserUpgrade[]
+  
+  @@index([unlockRequirement]) // Add index for unlock queries
+  @@index([type, targetId]) // Add composite index for type and target filtering
 }
 
 model UserUpgrade {
@@ -187,4 +194,21 @@ model UserProgress {
   offlineBonus   Float    @default(0.5)  // % of regular production earned while offline
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  
+  @@index([lastActive]) // Add index for offline calculations
+}
+
+// Add a new model for denormalizing frequently accessed game stats
+model GameStats {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  totalBusinesses   Int      @default(0)
+  totalTeamMembers  Int      @default(0)
+  totalUpgrades     Int      @default(0)
+  totalAchievements Int      @default(0)
+  highestLoC        Int      @default(0)
+  productionRate    Int      @default(0)
+  lastUpdated       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

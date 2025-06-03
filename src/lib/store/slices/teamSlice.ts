@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand';
 import { calculatePassiveRate } from '../utils/calculations';
+import { GameState } from '../gameStore';
 
 export interface TeamMember {
   id: string;
@@ -23,12 +24,12 @@ export interface TeamSlice {
   loadTeamData: (loadedTeam: TeamMember[]) => void;
 }
 
-export const createTeamSlice: StateCreator<TeamSlice> = 
+export const createTeamSlice: StateCreator<GameState> = 
   (set, get, api) => ({
     teamMembers: [],
     
     hireTeamMember: (teamId: string) => {
-      const state = api.getState() as any;
+      const state = get() as GameState;
       const teamIndex = state.teamMembers.findIndex((t: TeamMember) => t.id === teamId);
       
       if (teamIndex === -1) return;
@@ -44,7 +45,7 @@ export const createTeamSlice: StateCreator<TeamSlice> =
       if (state.currentLoC < cost) return;
       
       // Update team member count and LoC
-      set((state: any) => {
+      set((state: GameState) => {
         const updatedTeamMembers = [...state.teamMembers];
         updatedTeamMembers[teamIndex] = {
           ...updatedTeamMembers[teamIndex],
@@ -67,15 +68,15 @@ export const createTeamSlice: StateCreator<TeamSlice> =
       });
       
       // Check for team-related achievements
-      const fullState = api.getState() as any;
+      const fullState = get() as GameState;
       if (fullState.checkAchievements) {
         fullState.checkAchievements();
       }
     },
     
     assignManager: (businessId: string, teamMemberId: string) => {
-      const state = api.getState() as any;
-      const businessIndex = state.businesses.findIndex((b: any) => b.id === businessId);
+      const state = get() as GameState;
+      const businessIndex = state.businesses.findIndex(b => b.id === businessId);
       const teamIndex = state.teamMembers.findIndex((t: TeamMember) => t.id === teamMemberId);
       
       if (businessIndex === -1 || teamIndex === -1) return;
@@ -85,7 +86,7 @@ export const createTeamSlice: StateCreator<TeamSlice> =
       if (!teamMember.availableCount || teamMember.availableCount <= 0) return;
       
       // Update business and team member
-      set((state: any) => {
+      set((state: GameState) => {
         const updatedBusinesses = [...state.businesses];
         const updatedTeamMembers = [...state.teamMembers];
         
@@ -109,8 +110,8 @@ export const createTeamSlice: StateCreator<TeamSlice> =
     },
     
     unassignManager: (businessId: string, teamMemberId: string) => {
-      const state = api.getState() as any;
-      const businessIndex = state.businesses.findIndex((b: any) => b.id === businessId);
+      const state = get() as GameState;
+      const businessIndex = state.businesses.findIndex(b => b.id === businessId);
       const teamIndex = state.teamMembers.findIndex((t: TeamMember) => t.id === teamMemberId);
       
       if (businessIndex === -1 || teamIndex === -1) return;
@@ -120,7 +121,7 @@ export const createTeamSlice: StateCreator<TeamSlice> =
       if (!business.assignedManagers || business.assignedManagers <= 0) return;
       
       // Update business and team member
-      set((state: any) => {
+      set((state: GameState) => {
         const updatedBusinesses = [...state.businesses];
         const updatedTeamMembers = [...state.teamMembers];
         
@@ -144,7 +145,7 @@ export const createTeamSlice: StateCreator<TeamSlice> =
     },
     
     loadTeamData: (loadedTeam: TeamMember[]) => {
-      set((state: any) => ({
+      set((state: GameState) => ({
         teamMembers: mergeTeamMembers(state.teamMembers, loadedTeam),
       }));
     },

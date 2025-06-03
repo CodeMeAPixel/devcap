@@ -14,7 +14,6 @@
 /coverage
 
 # development stuff
-/todo
 bun.lock
 bun.lockb
 

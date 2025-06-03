@@ -108,8 +108,9 @@ function UpgradeCard({ upgrade, canAfford, onPurchase }: UpgradeCardProps) {
             fill
             className="object-cover"
             onError={(e) => {
-              // Fallback to default image if the upgrade image fails to load
-              (e.target as any).src = '/images/upgrades/default.jpg';
+              // Type the event target correctly
+              const target = e.target as HTMLImageElement;
+              target.src = '/images/upgrades/default.jpg';
             }}
           />
           

@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand';
 import { calculatePassiveRate } from '../utils/calculations';
+import { GameState } from '../gameStore';
 
 export interface Upgrade {
   id: string;
@@ -21,12 +22,12 @@ export interface UpgradeSlice {
   loadUpgradeData: (loadedUpgrades: Upgrade[]) => void;
 }
 
-export const createUpgradeSlice: StateCreator<UpgradeSlice> = 
+export const createUpgradeSlice: StateCreator<GameState> = 
   (set, get, api) => ({
     upgrades: [],
     
     purchaseUpgrade: (upgradeId: string) => {
-      const state = api.getState() as any;
+      const state = get() as GameState;
       const upgradeIndex = state.upgrades.findIndex((u: Upgrade) => u.id === upgradeId);
       
       if (upgradeIndex === -1) return;
@@ -36,7 +37,7 @@ export const createUpgradeSlice: StateCreator<UpgradeSlice> =
       if (upgrade.purchased || state.currentLoC < upgrade.cost) return;
       
       // Update upgrade and LoC
-      set((state: any) => {
+      set((state: GameState) => {
         const updatedUpgrades = [...state.upgrades];
         updatedUpgrades[upgradeIndex] = {
           ...updatedUpgrades[upgradeIndex],
@@ -66,14 +67,14 @@ export const createUpgradeSlice: StateCreator<UpgradeSlice> =
       });
       
       // Check for upgrade-related achievements
-      const fullState = api.getState() as any;
+      const fullState = get() as GameState;
       if (fullState.checkAchievements) {
         fullState.checkAchievements();
       }
     },
     
     loadUpgradeData: (loadedUpgrades: Upgrade[]) => {
-      set((state: any) => ({
+      set((state: GameState) => ({
         upgrades: mergeUpgrades(state.upgrades, loadedUpgrades),
       }));
     },
