@@ -57,7 +57,7 @@ export const useGameStore = create<GameState>()(
       
       initializeGame: async () => {
         try {
-          const response = await fetch('/api/game/data');
+          const response = await fetch('/api/v1/game/data');
           if (!response.ok) {
             throw new Error('Failed to fetch game data');
           }
@@ -100,14 +100,10 @@ export const useGameStore = create<GameState>()(
             return;
           }
           
-          console.log('Loading game data for user:', userId);
+          console.log('Attempting to load game data for user:', userId);
           
-          // Initialize game data first if not already initialized
-          if (!get().isInitialized) {
-            await get().initializeGame();
-          }
-          
-          const response = await fetch(`/api/game/load?userId=${userId}`);
+          // Update API endpoint to use v1 prefix
+          const response = await fetch(`/api/v1/game/load?userId=${userId}`);
           
           console.log('Load response status:', response.status);
           
@@ -160,32 +156,27 @@ export const useGameStore = create<GameState>()(
           const state = get();
           
           if (!state.userId) {
-            console.warn('No user ID found, cannot save game data');
+            console.warn('Cannot save game: No user ID found');
             return false;
           }
           
-          const gameData = {
-            userId: state.userId,
-            currentLoC: state.currentLoC,
-            totalLoC: state.totalLoC,
-            locPerClick: state.locPerClick,
-            businesses: state.businesses,
-            teamMembers: state.teamMembers,
-            upgrades: state.upgrades,
-            achievements: state.achievements,
-          };
-          
-          const response = await fetch('/api/game/save', {
+          // Update API endpoint to use v1 prefix
+          await fetch('/api/v1/game/save', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(gameData),
+            body: JSON.stringify({
+              userId: state.userId,
+              currentLoC: state.currentLoC,
+              totalLoC: state.totalLoC,
+              locPerClick: state.locPerClick,
+              businesses: state.businesses,
+              teamMembers: state.teamMembers,
+              upgrades: state.upgrades,
+              achievements: state.achievements,
+            }),
           });
-          
-          if (!response.ok) {
-            throw new Error('Failed to save game data');
-          }
           
           const result = await response.json();
           set({ lastSaved: new Date(result.savedAt) });
