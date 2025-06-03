@@ -24,6 +24,11 @@ model User {
   achievements   UserAchievement[]
   accounts       Account[]
   sessions       Session[]
+  gameStats      GameStats?
+
+  @@index([email])
+  @@index([isAdmin])
+  @@index([createdAt])
 }
 
 model Account {
@@ -43,6 +48,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -51,6 +57,9 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
 }
 
 model VerificationToken {
@@ -59,6 +68,7 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@index([expires])
 }
 
 model Business {
@@ -75,7 +85,8 @@ model Business {
   updatedAt        DateTime       @updatedAt
   userBusinesses   UserBusiness[]
   
-  @@index([unlockRequirement]) // Add index for unlocking logic queries
+  @@index([unlockRequirement])
+  @@index([name])
 }
 
 model UserBusiness {
@@ -91,6 +102,8 @@ model UserBusiness {
   updatedAt          DateTime @updatedAt
 
   @@unique([userId, businessId])
+  @@index([level])
+  @@index([lastCollected])
 }
 
 model TeamMember {
@@ -107,7 +120,9 @@ model TeamMember {
   updatedAt        DateTime    @updatedAt
   userTeams        UserTeam[]
   
-  @@index([unlockRequirement]) // Add index for unlocking logic queries
+  @@index([unlockRequirement])
+  @@index([name])
+  @@index([baseCost])
 }
 
 model UserTeam {
@@ -122,6 +137,7 @@ model UserTeam {
   updatedAt       DateTime   @updatedAt
 
   @@unique([userId, teamMemberId])
+  @@index([count, availableCount])
 }
 
 model Upgrade {
@@ -139,8 +155,9 @@ model Upgrade {
   updatedAt        DateTime      @updatedAt
   userUpgrades     UserUpgrade[]
   
-  @@index([unlockRequirement]) // Add index for unlock queries
-  @@index([type, targetId]) // Add composite index for type and target filtering
+  @@index([unlockRequirement])
+  @@index([type, targetId])
+  @@index([cost])
 }
 
 model UserUpgrade {
@@ -153,6 +170,7 @@ model UserUpgrade {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, upgradeId])
+  @@index([createdAt])
 }
 
 model Achievement {
@@ -167,6 +185,9 @@ model Achievement {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   userAchievements UserAchievement[]
+
+  @@index([type, requirement])
+  @@index([reward])
 }
 
 model UserAchievement {
@@ -180,6 +201,7 @@ model UserAchievement {
   updatedAt     DateTime    @updatedAt
 
   @@unique([userId, achievementId])
+  @@index([unlockedAt])
 }
 
 model UserProgress {
@@ -195,10 +217,10 @@ model UserProgress {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   
-  @@index([lastActive]) // Add index for offline calculations
+  @@index([lastActive])
+  @@index([currency, totalEarned])
 }
 
-// Add a new model for denormalizing frequently accessed game stats
 model GameStats {
   id                String   @id @default(uuid())
   userId            String   @unique
@@ -211,4 +233,28 @@ model GameStats {
   lastUpdated       DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([highestLoC, productionRate])
+  @@index([lastUpdated])
+}
+
+model GameEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  eventType   String   // purchase, upgrade, achievement, etc.
+  eventData   Json     // Flexible JSON data structure for event details
+  timestamp   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([eventType])
+  @@index([timestamp])
+}
+
+model DatabaseMigration {
+  id          String   @id @default(uuid())
+  version     String   @unique
+  description String
+  appliedAt   DateTime @default(now())
+  
+  @@index([appliedAt])
 }
