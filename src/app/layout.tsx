@@ -1,6 +1,8 @@
 import { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Providers } from "@/components/providers/Providers";
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -39,7 +41,11 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable} antialiased min-h-screen tech-ui`}
     >
       <body>
-        <Providers>{children}</Providers>
+        <SessionProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Providers>{children}</Providers>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
